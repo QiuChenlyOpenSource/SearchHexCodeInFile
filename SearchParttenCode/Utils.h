@@ -31,45 +31,8 @@ long getRealFileOffset2RAMOffset(long codeOffset, long fileOffset);
 NSArray<NSNumber *> *findOffsetsForHexInCurrentFile(NSString *searchHex);
     NSArray<NSNumber *> *findOffsetsForWildcardHexInFile(NSString *filePath, NSString *searchHex, NSUInteger matchCount);
 
-    void hookPtrByMatchMachineCodeA(char* hookFile,NSString* intelMachineCode,NSString* arm64MachineCode,int matchCount, void * newFunction);
-    
-    BOOL hookPtrPatchCodeByMatchMachineCode(
-                                            uint32_t hookImageInx,
-                                            NSString* _Nullable intelMachineCode,
-                                            NSString* _Nullable arm64MachineCode,
-                                            int patchByteStartCount,
-                                            uint8_t* _Nullable patchCode,
-                                            uint8_t patchCodeSize,
-                                            int matchCount
-                                            );
-    BOOL hookPtrPatchCodeByMatchMachineCodeN(
-                                             NSString* _Nullable intelMachineCode,
-                                             NSString* _Nullable arm64MachineCode,
-                                             int patchByteStartCount,
-                                             uint8_t* _Nullable patchCode,
-                                             uint8_t patchCodeSize
-                                             );
-    BOOL hookPtrPatchCodeByMatchMachineCodeC(
-                                             NSString* _Nullable intelMachineCode,
-                                             NSString* _Nullable arm64MachineCode,
-                                             int patchByteStartCount,
-                                             uint8_t* _Nullable patchCode,
-                                             uint8_t patchCodeSize,
-                                             int matchCount
-                                             );
-    BOOL hookPtrPatchCodeByMatchMachineCodeA(
-                                             char* _Nullable hookImageName,
-                                             NSString* _Nullable intelMachineCode,
-                                             NSString* _Nullable arm64MachineCode,
-                                             int patchByteStartCount,
-                                             uint8_t* _Nullable patchCode,
-                                             uint8_t patchCodeSize,
-                                             int matchCount
-                                             );
 
-
-void hookPtrByMatchMachineCode(const char* hookFile,NSString* intelMachineCode,NSString* arm64MachineCode,int matchCount);
-
+NSMutableDictionary* hookPtrByMatchMachineCode(const char* hookFile,NSString* intelMachineCode,NSString* arm64MachineCode,int matchCount);
 
 @interface Utils : NSObject
 

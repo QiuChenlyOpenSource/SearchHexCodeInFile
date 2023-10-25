@@ -281,18 +281,22 @@ NSArray<NSNumber *> *findOffsetsForWildcardHexInFile(NSString *filePath, NSStrin
  * @param arm64MachineCode arm机器码
  * @param matchCount 匹配数量 建议为1
  */
-void hookPtrByMatchMachineCode(const char* hookFile,NSString* intelMachineCode,NSString* arm64MachineCode,int matchCount){
+NSMutableDictionary*  hookPtrByMatchMachineCode(const char* hookFile,NSString* intelMachineCode,NSString* arm64MachineCode,int matchCount){
     //hook通杀开始
     intptr_t fileOffset = getCurrentArchFileOffset(hookFile);
     //当前需要检查的架构
     NSString *patchImage = [NSString stringWithUTF8String:hookFile];
 
+    NSMutableDictionary *json = [NSMutableDictionary dictionaryWithDictionary:@{
+        @"arm": @"",
+        @"x86": @""
+    }];
+
     NSArray<NSNumber *> *destinationFunction = findOffsetsForWildcardHexInFile(patchImage, intelMachineCode, matchCount);
     if (destinationFunction.count > 0) {
         for (NSNumber *destination in destinationFunction) {
-            NSLog(@"==== Intel 通用Hook地址 %p", (void *) destination.longValue);
-            //hookFileInx
-            //getRealFileOffset2RAMOffset(destination.longValue, fileOffset)
+            NSLog(@"==== Intel 通用Hook地址 %llx", destination.longLongValue);
+            json[@"x86"] = [NSString stringWithFormat:@"%llx", destination.longLongValue];
         }
     }
     
@@ -300,13 +304,13 @@ void hookPtrByMatchMachineCode(const char* hookFile,NSString* intelMachineCode,N
    
     if (destinationFunction.count > 0) {
         for (NSNumber *destination in destinationFunction) {
-            NSLog(@"==== ARM 通用Hook地址 %p", (void *) destination.longValue);
-            //hookFileInx
-            //getRealFileOffset2RAMOffset(destination.longValue, fileOffset)
+            NSLog(@"==== ARM 通用Hook地址 %llx", destination.longLongValue);
+            json[@"arm"] = [NSString stringWithFormat:@"%llx", destination.longLongValue];
         }
     } else {
         NSLog(@"==== 没有匹配到数据");
     }
+    return json;
 }
 
 @end
