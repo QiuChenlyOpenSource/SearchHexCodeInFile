@@ -7,54 +7,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "FAF9042B-8E31-4652-9BD3-73B350CA728F"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "SearchParttenCode/main.m"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "75"
-            endingLineNumber = "75"
-            landmarkName = "main(argc, argv)"
-            landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "FAF9042B-8E31-4652-9BD3-73B350CA728F - 1bf90407d86cbbab"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "main"
-                  moduleName = "SearchParttenCode"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Volumes/data/macOS_HookWorkSpace/SearchHexCodeInFile/SearchParttenCode/main.m"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "56"
-                  endingLineNumber = "56"
-                  offsetFromSymbolStart = "471">
-               </Location>
-               <Location
-                  uuid = "FAF9042B-8E31-4652-9BD3-73B350CA728F - 1bf90407d86cbbc8"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "main"
-                  moduleName = "SearchParttenCode"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Volumes/data/macOS_HookWorkSpace/SearchHexCodeInFile/SearchParttenCode/main.m"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "55"
-                  endingLineNumber = "55"
-                  offsetFromSymbolStart = "519">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "D3D0D6C4-CA34-4A43-AA8F-D53E6DDA16EA"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -111,6 +63,36 @@
                   startingLineNumber = "41"
                   endingLineNumber = "41"
                   offsetFromSymbolStart = "226">
+               </Location>
+               <Location
+                  uuid = "D3D0D6C4-CA34-4A43-AA8F-D53E6DDA16EA - 1bf914e307d068ca"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "main1"
+                  moduleName = "SearchParttenCode"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/data/macOS_HookWorkSpace/SearchHexCodeInFile/SearchParttenCode/main.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "55"
+                  endingLineNumber = "55"
+                  offsetFromSymbolStart = "226">
+               </Location>
+               <Location
+                  uuid = "D3D0D6C4-CA34-4A43-AA8F-D53E6DDA16EA - 1bf914e307d068eb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "main1"
+                  moduleName = "SearchParttenCode"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/data/macOS_HookWorkSpace/SearchHexCodeInFile/SearchParttenCode/main.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "54"
+                  endingLineNumber = "54"
+                  offsetFromSymbolStart = "273">
                </Location>
             </Locations>
          </BreakpointContent>
