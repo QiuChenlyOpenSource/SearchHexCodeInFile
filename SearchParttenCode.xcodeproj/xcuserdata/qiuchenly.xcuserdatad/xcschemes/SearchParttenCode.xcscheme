@@ -50,7 +50,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "surge"
+            argument = "cmmxsetapp"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

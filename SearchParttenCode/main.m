@@ -9,17 +9,6 @@
 #import "Utils.h"
 
 
-void SurgeHelperScaner(NSDictionary* jsonDict){
-   
-}
-
-void CleanMyMacX(void){
-    hookPtrByMatchMachineCode("/Users/qiuchenly/Downloads/com.macpaw.CleanMyMac4.Agent",
-                              @"55 48 89 E5 41 57 41 56 41 55 41 54 53 48 83 EC 58 48 89 D7 48 8B 05 8E 4F 02 00 48 8B 00 48 89 45 D0 FF 15 91 50 02 00 49 89 C6 31 C0 48 89 45 A8 48 89 45 B8 48 89 45 B0 4D 85 F6 74 15 48 8B 15 5C 55 04 00 48 8D 7D 80 4C 89 F6 E8 D0 BE 00 00 EB 0B 0F 57 C0 0F 29 45 90 0F 29 45 80 48 8B 3D F4 73 04 00 48 8B 35 55 57 04 00 48 8B 1D 36 50 02 00 48 8D 55 80 B9 20 00 00 00 FF D3 48 89 C7 E8 AD BE 00 00 49 89 C7 48 8B 05 F9 4F 02 00 48 8B 00 48 8D 4D C0 48 89 01 48 8D 55 C8 4C 89 3A",
-                              @"FF 03 02 D1 F6 57 05 A9 F4 4F 06 A9 FD 7B 07 A9 FD C3 01 91 E0 03 02 AA 1F 20 03 D5 C8 49 18 58 08 01 40 F9 A8 83 1D F8 38 2A 00 94 F3 03 00 AA FF FF 02 A9 FF 13 00 F9 A0 00 00 B4 E8 03 00 91 E0 03 13 AA 7E 2F 00 94 03 00 00 14 00 E4 00 6F E0 03 00 AD 1F 20 03 D5 20 03 26 58 E2 03 00 91 03 04 80 52 96 31 00 94 FD 03 1D AA 30 2A 00 94 F4 03 00 AA 1F 20 03 D5 E8 4D 18 58 08 01 40 F9 E8 1F 00 F9 A0 03 1D F8 1F 20 03 D5 80 00 26 58 A2 C3 00 D1 E3 E3 00 91 24 00 80 52 50 32 00 94 FD 03 1D AA",
-                              1);
-}
-
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         const char * target = argv[1];
@@ -32,8 +21,7 @@ int main(int argc, const char * argv[]) {
         NSString *executableDirectory = [executablePath stringByDeletingLastPathComponent];
         executableDirectory = [executableDirectory stringByAppendingString:@"/"];
 
-        //NSLog(@"可执行文件所在的目录：%@", executableDirectory);
-        
+        NSLog(@"可执行文件所在的目录：%@", executableDirectory);
         
         /**
          文件内容格式示例
@@ -77,30 +65,128 @@ int main(int argc, const char * argv[]) {
             return -4;
         }
         
-        NSMutableDictionary* res = hookPtrByMatchMachineCode([info[@"locate"] UTF8String],
-                                  info[@"x86"],
-                                  info[@"arm"],
-                                  1);
-        
-        NSString *targetFile = [executableDirectory stringByAppendingString:info[@"out"]];
-        NSError *fileError;
-        NSString *fileContent = [NSString stringWithContentsOfFile:targetFile encoding:NSUTF8StringEncoding error:&error];
-        if (fileContent) {
-            NSString *keyIntel = info[@"replaceIntel"];
-            NSString *keyARM = info[@"replaceARM"];
+        NSArray *locateArray = (NSArray *)info[@"locate"];
+
+        for (NSString *item in locateArray) {
+            NSMutableDictionary* res = hookPtrByMatchMachineCode([item UTF8String],
+                                      info[@"x86"],
+                                      info[@"arm"],
+                                      1);
             
-            NSString *modifiedContent = [fileContent stringByReplacingOccurrencesOfString:keyIntel withString:res[@"x86"]];
-            
-            modifiedContent = [modifiedContent stringByReplacingOccurrencesOfString:keyARM withString:res[@"arm"]];
-            
-            BOOL success = [modifiedContent writeToFile:targetFile atomically:YES encoding:NSUTF8StringEncoding error:&fileError];
-            if (success) {
-                NSLog(@"成功更新了目标文件中的内容.");
+            NSString *targetFile = [executableDirectory stringByAppendingString:info[@"out"]];
+            NSError *fileError;
+            NSString *fileContent = [NSString stringWithContentsOfFile:targetFile encoding:NSUTF8StringEncoding error:&error];
+            if (fileContent) {
+                NSString *keyIntel = info[@"replaceIntel"];
+                NSString *keyARM = info[@"replaceARM"];
+                
+                NSString *modifiedContent = [fileContent stringByReplacingOccurrencesOfString:keyIntel withString:res[@"x86"]];
+                
+                modifiedContent = [modifiedContent stringByReplacingOccurrencesOfString:keyARM withString:res[@"arm"]];
+                
+                BOOL success = [modifiedContent writeToFile:targetFile atomically:YES encoding:NSUTF8StringEncoding error:&fileError];
+                if (success) {
+                    NSLog(@"成功更新了目标文件中的内容.");
+                } else {
+                    NSLog(@"更新参数失败！ %@", error);
+                }
             } else {
-                NSLog(@"更新参数失败！ %@", error);
+                NSLog(@"无法读取待更新参数的文件错误: %@", error);
             }
-        } else {
-            NSLog(@"无法读取待更新参数的文件错误: %@", error);
+            
+            NSString* needFixPlist = info[@"fixPlist"];
+            if (needFixPlist!=nil) {
+                NSLog(@"准备修复Plist信息...\n文件: %@",item);
+                
+                NSData *fileData = [NSData dataWithContentsOfFile:item];
+                if (fileData == nil) {
+                    NSLog(@"无法读取文件");
+                    return -5;
+                }
+
+                // 在这里处理二进制数据
+                // 您可以使用NSData的方法来访问和操作二进制数据
+                // 例如，[fileData bytes]返回指向二进制数据的指针，[fileData length]返回数据的长度
+                const void *bytes = [fileData bytes];
+                NSMutableData *mutableFileData = [NSMutableData dataWithData:fileData];
+                const long len = [fileData length];
+                
+                NSLog(@"大小: %li字节",len);
+                
+                NSArray<NSNumber *> *destinationInx = findOffsetsForWildcardHexInFile(item, @"3C 6B 65 79 3E 53 4D 41 75 74 68 6F 72 69 7A 65 64 43 6C 69 65 6E 74 73 3C 2F 6B 65 79 3E", @"");
+                
+                for (NSNumber* inx in destinationInx){
+                    int start = [inx intValue];
+                    NSLog(@"开始位置: %i",[inx intValue]);
+                    
+                    const void *startByte = bytes + start;
+                    const void *searchResult = memmem(startByte, len - start, "\x3C\x2F\x61\x72\x72\x61\x79\x3E", 8);
+                    
+                    if (searchResult != NULL) {
+                        NSUInteger endIndex = searchResult - bytes;
+                        NSUInteger length = endIndex - start + 8;
+                        
+                        NSData *subData = [NSData dataWithBytes:startByte length:length];
+                        
+                        NSString *stringData = [[NSString alloc] initWithData:subData encoding:NSUTF8StringEncoding];
+//                        NSLog(@"%@", stringData);
+                        
+                        // 使用正则表达式提取特定部分
+                        NSError *error = nil;
+                        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"<string>(.*?) and anchor" options:0 error:&error];
+                        if (error) {
+                            NSLog(@"Regex error: %@", error.localizedDescription);
+                        }
+                        
+                        NSArray<NSTextCheckingResult *> *matches = [regex matchesInString:stringData options:0 range:NSMakeRange(0, stringData.length)];
+                        
+                        
+                        if([matches count] <=0){
+                            NSLog(@"此区域已经被修改,跳过。");
+                            break;
+                        }
+                        
+                        NSMutableString *reformattedString = [NSMutableString string];
+                        [reformattedString appendString:@"<key>SMAuthorizedClients</key>\n<array>\n"];
+
+                        for (NSTextCheckingResult *match in matches) {
+                            NSRange matchRange = [match rangeAtIndex:1];
+                            NSString *stringValue = [stringData substringWithRange:matchRange];
+                            [reformattedString appendFormat:@"\t<string>%@</string>\n", stringValue];
+                        }
+
+                        [reformattedString appendString:@"</array>"];
+
+//                        NSLog(@"%@", reformattedString);
+                        
+                        NSData* finalBytes = [reformattedString dataUsingEncoding:NSUTF8StringEncoding];
+                        
+                        // 获取reformattedData的长度
+                        NSUInteger reformattedLength = [finalBytes length];
+
+                        // 计算剩余空间需要填充的字节数
+                        NSUInteger remainingLength = length - reformattedLength;
+
+                        // 替换原始部分
+                        [mutableFileData replaceBytesInRange:NSMakeRange(start, reformattedLength) withBytes:[finalBytes bytes] length:reformattedLength];
+                        
+                        // 填充剩余空间
+                        if (remainingLength > 0) {
+                            unsigned char paddingBytes[remainingLength];
+                            memset(paddingBytes, 0x0A, remainingLength);
+                            [mutableFileData replaceBytesInRange:NSMakeRange(start + reformattedLength, remainingLength) withBytes:paddingBytes length:remainingLength];
+                        }
+                    } else {
+                        NSLog(@"未找到指定字节序列");
+                    }
+                }
+                // 将修改后的数据写回文件
+                if (![mutableFileData writeToFile:item atomically:YES]) {
+                    NSLog(@"写入文件失败");
+                    return -7;
+                }
+                NSLog(@"文件修复完成.");
+            }
         }
 //        CleanMyMacX();
     }
