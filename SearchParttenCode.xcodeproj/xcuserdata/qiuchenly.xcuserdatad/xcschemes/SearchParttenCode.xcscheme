@@ -51,6 +51,10 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "cmmxsetapp"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "proxyman"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

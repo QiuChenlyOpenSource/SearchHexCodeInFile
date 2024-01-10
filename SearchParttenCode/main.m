@@ -129,11 +129,17 @@ int main(int argc, const char * argv[]) {
                         NSData *subData = [NSData dataWithBytes:startByte length:length];
                         
                         NSString *stringData = [[NSString alloc] initWithData:subData encoding:NSUTF8StringEncoding];
-//                        NSLog(@"%@", stringData);
                         
+#ifdef DEBUG
+                        
+                        NSLog(@"%@", stringData);
+                        
+#endif
                         // 使用正则表达式提取特定部分
                         NSError *error = nil;
-                        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"<string>(.*?) and anchor" options:0 error:&error];
+                        
+                        //<string>anchor apple generic and identifier "com.proxyman.NSProxy" and
+                        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"<string>.*?identifier \"(.*?)\"" options:0 error:&error];
                         if (error) {
                             NSLog(@"Regex error: %@", error.localizedDescription);
                         }
@@ -152,13 +158,13 @@ int main(int argc, const char * argv[]) {
                         for (NSTextCheckingResult *match in matches) {
                             NSRange matchRange = [match rangeAtIndex:1];
                             NSString *stringValue = [stringData substringWithRange:matchRange];
-                            [reformattedString appendFormat:@"\t<string>%@</string>\n", stringValue];
+                            [reformattedString appendFormat:@"\t<string>identifier \"%@\"</string>\n", stringValue];
                         }
 
                         [reformattedString appendString:@"</array>"];
-
-//                        NSLog(@"%@", reformattedString);
-                        
+#ifdef DEBUG
+                        NSLog(@"%@", reformattedString);
+#endif
                         NSData* finalBytes = [reformattedString dataUsingEncoding:NSUTF8StringEncoding];
                         
                         // 获取reformattedData的长度
