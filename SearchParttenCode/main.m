@@ -68,35 +68,36 @@ int main(int argc, const char * argv[]) {
         NSArray *locateArray = (NSArray *)info[@"locate"];
 
         for (NSString *item in locateArray) {
-            NSMutableDictionary* res = hookPtrByMatchMachineCode([item UTF8String],
-                                      info[@"x86"],
-                                      info[@"arm"],
-                                      1);
-            
-            NSString *targetFile = [executableDirectory stringByAppendingString:info[@"out"]];
-            NSError *fileError;
-            NSString *fileContent = [NSString stringWithContentsOfFile:targetFile encoding:NSUTF8StringEncoding error:&error];
-            if (fileContent) {
-                NSString *keyIntel = info[@"replaceIntel"];
-                NSString *keyARM = info[@"replaceARM"];
-                
-                NSString *modifiedContent = [fileContent stringByReplacingOccurrencesOfString:keyIntel withString:res[@"x86"]];
-                
-                modifiedContent = [modifiedContent stringByReplacingOccurrencesOfString:keyARM withString:res[@"arm"]];
-                
-                BOOL success = [modifiedContent writeToFile:targetFile atomically:YES encoding:NSUTF8StringEncoding error:&fileError];
-                if (success) {
-                    NSLog(@"成功更新了目标文件中的内容.");
+            // 部分app可能不存在内部校验，所以有时候并不需要这些操作
+            if(info[@"x86"] != nil && info[@"arm"] != nil) {
+                NSMutableDictionary* res = hookPtrByMatchMachineCode([item UTF8String], info[@"x86"], info[@"arm"], 1);
+
+                NSString *targetFile = [executableDirectory stringByAppendingString:info[@"out"]];
+                NSError *fileError;
+                NSString *fileContent = [NSString stringWithContentsOfFile:targetFile encoding:NSUTF8StringEncoding error:&error];
+                if (fileContent) {
+                    NSString *keyIntel = info[@"replaceIntel"];
+                    NSString *keyARM = info[@"replaceARM"];
+
+                    NSString *modifiedContent = [fileContent stringByReplacingOccurrencesOfString:keyIntel withString:res[@"x86"]];
+
+                    modifiedContent = [modifiedContent stringByReplacingOccurrencesOfString:keyARM withString:res[@"arm"]];
+
+                    BOOL success = [modifiedContent writeToFile:targetFile atomically:YES encoding:NSUTF8StringEncoding error:&fileError];
+                    if (success) {
+                        NSLog(@"成功更新了目标文件中的内容.");
+                    } else {
+                        NSLog(@"更新参数失败！ %@", error);
+                    }
                 } else {
-                    NSLog(@"更新参数失败！ %@", error);
+                    NSLog(@"无法读取待更新参数的文件错误: %@", error);
                 }
-            } else {
-                NSLog(@"无法读取待更新参数的文件错误: %@", error);
             }
             
             NSString* needFixPlist = info[@"fixPlist"];
             if (needFixPlist!=nil) {
-                NSLog(@"准备修复Plist信息...\n文件: %@",item);
+                NSLog(@"准备修复Plist信息...");
+                NSLog(@"文件: %@", item);
                 
                 NSData *fileData = [NSData dataWithContentsOfFile:item];
                 if (fileData == nil) {
@@ -129,6 +130,7 @@ int main(int argc, const char * argv[]) {
                         NSData *subData = [NSData dataWithBytes:startByte length:length];
                         
                         NSString *stringData = [[NSString alloc] initWithData:subData encoding:NSUTF8StringEncoding];
+                        stringData = [stringData stringByReplacingOccurrencesOfString:@"&quot;" withString:@"\""];
                         
 #ifdef DEBUG
                         
@@ -137,8 +139,7 @@ int main(int argc, const char * argv[]) {
 #endif
                         // 使用正则表达式提取特定部分
                         NSError *error = nil;
-                        
-                        //<string>anchor apple generic and identifier "com.proxyman.NSProxy" and
+
                         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"<string>.*?identifier \"(.*?)\"" options:0 error:&error];
                         if (error) {
                             NSLog(@"Regex error: %@", error.localizedDescription);
@@ -148,7 +149,7 @@ int main(int argc, const char * argv[]) {
                         
                         
                         if([matches count] <=0){
-                            NSLog(@"此区域已经被修改,跳过。");
+                            NSLog(@"此区域已经被修改，或匹配失败，跳过。");
                             break;
                         }
                         
@@ -194,7 +195,6 @@ int main(int argc, const char * argv[]) {
                 NSLog(@"文件修复完成.");
             }
         }
-//        CleanMyMacX();
     }
     return 0;
 }

@@ -1,0 +1,11 @@
+.DS_Store
+*.iml
+.idea
+.vscode
+.ruby-lsp
+IACPLHttpTransferClient
+.dsp_cache
+default.profraw
+SearchParttenCode.xcodeproj/xcuserdata
+SearchParttenCode.xcodeproj/xcshareddata
+SearchParttenCode.xcodeproj/project.xcworkspace/xcuserdata
