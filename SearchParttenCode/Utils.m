@@ -231,36 +231,26 @@ NSArray<NSNumber *> *findOffsetsForWildcardHexInFile(NSString *filePath, NSStrin
         if (searchData) {
             NSUInteger searchLength = [searchData length];
             NSUInteger fileLength = [fileData length];
-            NSUInteger searchIndex = 0;
             NSUInteger matchCounter = 0;
-
-            for (NSUInteger i = 0; i < fileLength; i++) {
-                uint8_t currentByte = ((const uint8_t *) [fileData bytes])[i];
-
-                if (searchIndex < searchLength) {
-                    uint8_t searchByte = ((const uint8_t *) [searchData bytes])[searchIndex];
-
-                    if (searchByte == 0x90) {
-                        // Wildcard byte, continue searching
-                        searchIndex++;
-                    } else if (currentByte == searchByte) {
-                        // Matched byte, move to the next search index
-                        searchIndex++;
-                    } else {
-                        // Mismatched byte, reset search index
-                        searchIndex = 0;
-                    }
-                } else {
-                    // Reached the end of the search pattern, add offset to results
-                    [offsets addObject:@(i - searchLength)];
-                    searchIndex = 0;
-                    matchCounter++;
-
-                    if (matchCounter >= matchCount) {
-                        break;
-                    }
-                }
-            }
+            
+            for (NSUInteger i = 0; i < fileLength - searchLength + 1; i++) {
+                 BOOL isMatch = YES;
+                 for (NSUInteger j = 0; j < searchLength; j++) {
+                     uint8_t fileByte = ((const uint8_t *)[fileData bytes])[i + j];
+                     uint8_t searchByte = ((const uint8_t *)[searchData bytes])[j];
+                     if (searchByte != 0x90 && fileByte != searchByte) {
+                         isMatch = NO;
+                         break;
+                     }
+                 }
+                 if (isMatch) {
+                     [offsets addObject:@(i)];
+                     matchCounter++;
+                     if (matchCounter >= matchCount) {
+                         break;
+                     }
+                 }
+             }
         } else {
             NSLog(@"Invalid search hex string: %@", searchHex);
         }
